@@ -1,0 +1,36 @@
+function woff() {
+	# get current wifi device
+	CURRENT_DEVICE=$(networksetup -listallhardwareports | awk '$3=="Wi-Fi" {getline; print $2}')
+	echo "Current Wi-Fi Device = '$CURRENT_DEVICE'"
+
+	# turn off wifi
+	networksetup -setairportpower $CURRENT_DEVICE off
+}
+
+function won() {
+	# get current wifi device
+	CURRENT_DEVICE=$(networksetup -listallhardwareports | awk '$3=="Wi-Fi" {getline; print $2}')
+	echo "Current Wi-Fi Device = '$CURRENT_DEVICE'"
+
+	# turn on wifi
+	networksetup -setairportpower $CURRENT_DEVICE on
+}
+
+function poff() {
+	cp ~/.gitconfig ~/.gitconfig.bak
+	sed -i .temp '/meldevproxy/s/^/#/' ~/.gitconfig
+	sed -i .temp '/savecookies/s/^/#/' ~/.gitconfig
+	sed -i .temp '/insteadOf = git/s/^/#/' ~/.gitconfig
+	echo "proxy added to gitconfig"
+}
+
+function pon() {
+	cp ~/.gitconfig ~/.gitconfig.bak
+	sed -i .temp '/^#.*meldevproxy/s/^#//' ~/.gitconfig
+	sed -i .temp '/^#.*savecookies/s/^#//' ~/.gitconfig
+	sed -i .temp '/^#.*insteadOf = git/s/^#//' ~/.gitconfig
+	echo "proxy removed from gitconfig"
+}
+
+# Enable git command  autocompletion for 'g' as well
+complete -o default -o nospace -F _git g
