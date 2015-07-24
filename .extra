@@ -32,5 +32,10 @@ function pon() {
 	echo "proxy removed from gitconfig"
 }
 
+# Use bash-completion, if available
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
+
 # Enable git command  autocompletion for 'g' as well
 complete -o default -o nospace -F _git g
