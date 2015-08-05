@@ -39,3 +39,6 @@ fi
 
 # Enable git command  autocompletion for 'g' as well
 complete -o default -o nospace -F _git g
+
+# Reset to Git 2.0+ push.default
+git config --global push.default simple
