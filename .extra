@@ -42,3 +42,6 @@ complete -o default -o nospace -F _git g
 
 # Reset to Git 2.0+ push.default
 git config --global push.default simple
+
+# cd into Sublime Settings
+alias ss="cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User"
