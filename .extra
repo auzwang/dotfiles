@@ -1,37 +1,3 @@
-function woff() {
-	# get current wifi device
-	CURRENT_DEVICE=$(networksetup -listallhardwareports | awk '$3=="Wi-Fi" {getline; print $2}')
-	echo "Current Wi-Fi Device = '$CURRENT_DEVICE'"
-
-	# turn off wifi
-	networksetup -setairportpower $CURRENT_DEVICE off
-}
-
-function won() {
-	# get current wifi device
-	CURRENT_DEVICE=$(networksetup -listallhardwareports | awk '$3=="Wi-Fi" {getline; print $2}')
-	echo "Current Wi-Fi Device = '$CURRENT_DEVICE'"
-
-	# turn on wifi
-	networksetup -setairportpower $CURRENT_DEVICE on
-}
-
-function poff() {
-	cp ~/.gitconfig ~/.gitconfig.bak
-	sed -i .temp '/meldevproxy/s/^/#/' ~/.gitconfig
-	sed -i .temp '/savecookies/s/^/#/' ~/.gitconfig
-	sed -i .temp '/insteadOf = git/s/^/#/' ~/.gitconfig
-	echo "proxy added to gitconfig"
-}
-
-function pon() {
-	cp ~/.gitconfig ~/.gitconfig.bak
-	sed -i .temp '/^#.*meldevproxy/s/^#//' ~/.gitconfig
-	sed -i .temp '/^#.*savecookies/s/^#//' ~/.gitconfig
-	sed -i .temp '/^#.*insteadOf = git/s/^#//' ~/.gitconfig
-	echo "proxy removed from gitconfig"
-}
-
 # Use bash-completion, if available
 if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
@@ -45,3 +11,10 @@ git config --global push.default simple
 
 # cd into Sublime Settings
 alias ss="cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User"
+
+# nvm caveats
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+
+#jest
+alias jest="node_modules/.bin/jest --verbose --config=jest-config.json"
