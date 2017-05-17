@@ -16,5 +16,22 @@ alias ss="cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User"
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
 
-#jest
-alias jest="node_modules/.bin/jest --verbose --config=jest-config.json"
+# flush redis
+alias fr="redis-cli flushall"
+
+# nested git
+alias gst='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash && echo)'\'' \;'
+alias gf='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git fetch -p && echo)'\'' \;'
+alias gp='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git pull && echo)'\'' \;'
+alias gs='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git status -s && echo)'\'' \;'
+alias gsta='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash apply && echo)'\'' \;'
+
+# fzf
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# hub
+eval "$(hub alias -s)"
+# Use hub-completion, if available
+if [ -f /usr/local/etc/hub.bash_completion ]; then
+  . /usr/local/etc/hub.bash_completion
+fi

@@ -129,15 +129,13 @@
 
 	# https://help.github.com/articles/signing-commits-using-gpg/
 	gpgsign = false
+	template = /Users/zwang/.stCommitMsg
 
 [diff]
 
 	# Detect copies as well as renames
 	renames = copies
-	tool = kdiff3
-	# Enable an experimental heuristic that shifts the hunk boundary in an
-	# attempt to make the resulting patch easier to read.
-	indentHeuristic = true
+	tool = Kaleidoscope
 
 [diff "bin"]
 
@@ -153,7 +151,7 @@
 
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
-	tool = kdiff3
+	tool = Kaleidoscope
 
 [push]
 
@@ -189,8 +187,21 @@
 	name = 
 	email = 
 [difftool "sourcetree"]
-	cmd = /Applications/kdiff3.app/Contents/MacOS/kdiff3 \"$LOCAL\" \"$REMOTE\"
+	cmd = /usr/local/bin/ksdiff -w \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /Applications/kdiff3.app/Contents/MacOS/kdiff3 \"$BASE\" \"$LOCAL\" \"$REMOTE\" -o \"$MERGED\"
+	cmd = /usr/local/bin/ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
 	trustExitCode = true
+[rerere]
+	enabled = true
+[mergetool "Kaleidoscope"]
+	cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+	trustexitcode = true
+[difftool "Kaleidoscope"]
+	cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[difftool]
+	prompt = false
+[mergetool]
+	prompt = false
+[pull]
+	rebase = true
