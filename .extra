@@ -35,3 +35,6 @@ eval "$(hub alias -s)"
 if [ -f /usr/local/etc/hub.bash_completion ]; then
   . /usr/local/etc/hub.bash_completion
 fi
+
+# thefuck
+eval "$(thefuck --alias)"
