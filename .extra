@@ -41,3 +41,41 @@ eval "$(thefuck --alias)"
 
 # git log
 alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+
+# kafka
+alias ks='zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties & kafka-server-start /usr/local/etc/kafka/server.properties'
+
+# bash-completion
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+
+# Localz NPM_TOKEN
+export NPM_TOKEN=4868f6f8-61a5-4c45-8f40-22ddab7e0304
+
+# ADB
+ANDROID_PLATFORM_TOOLS=~/Library/Android/sdk/platform-tools
+export PATH=$PATH:$ANDROID_PLATFORM_TOOLS
+
+# Fastlane
+export PATH="$HOME/.fastlane/bin:$PATH"
+
+# Bash, ~/.bashrc
+eval "$(grunt --completion=bash)"
+
+#
+function ports() { lsof -i :$@; }
+
+# Docker
+# Get latest container ID
+alias dl="docker ps -l -q"
+
+# Get container process
+alias dps="docker ps"
+
+# Bash into running container
+dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
+
+# Sh into running container
+dsh() { docker exec -it $(docker ps -aqf "name=$1") sh; }
+
+function dstop() { docker stop $(docker ps -aq); }
+function drm() { docker rm $(docker ps -a -q); }
