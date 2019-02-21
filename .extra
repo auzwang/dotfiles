@@ -1,3 +1,9 @@
+# Press escape for power!
+# set -o vi
+
+# Github Hub
+eval "$(hub alias -s)"
+
 # Use bash-completion, if available
 if [ -f ~/.git-completion.bash ]; then
   . ~/.git-completion.bash
@@ -12,6 +18,10 @@ git config --global push.default simple
 # cd into Sublime Settings
 alias ss="cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User"
 
+# cd into android tools
+alias androidsdk="cd ~/Library/Android/sdk/"
+alias emu="./emulator -avd Pixel_2_API_28 -no-snapshot-load"
+
 # nvm caveats
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
@@ -20,24 +30,14 @@ source $(brew --prefix nvm)/nvm.sh
 alias fr="redis-cli flushall"
 
 # nested git
-alias gst='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash && echo)'\'' \;'
-alias gf='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git fetch -p && echo)'\'' \;'
-alias gp='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git pull && echo)'\'' \;'
-alias gs='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git status -s && echo)'\'' \;'
-alias gsta='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash apply && echo)'\'' \;'
+# alias gst='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash && echo)'\'' \;'
+# alias gf='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git fetch -p && echo)'\'' \;'
+# alias gp='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git pull && echo)'\'' \;'
+# alias gs='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git status -s && echo)'\'' \;'
+# alias gsta='find . -maxdepth 1 -mindepth 1 -type d -exec sh -c '\''(echo {} && cd {} && git stash apply && echo)'\'' \;'
 
 # fzf
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-# hub
-eval "$(hub alias -s)"
-# Use hub-completion, if available
-if [ -f /usr/local/etc/hub.bash_completion ]; then
-  . /usr/local/etc/hub.bash_completion
-fi
-
-# thefuck
-eval "$(thefuck --alias)"
 
 # git log
 alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
@@ -46,7 +46,7 @@ alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold b
 alias ks='zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties & kafka-server-start /usr/local/etc/kafka/server.properties'
 
 # bash-completion
-[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
+# [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
 
 # Localz NPM_TOKEN
 export NPM_TOKEN=4868f6f8-61a5-4c45-8f40-22ddab7e0304
@@ -55,13 +55,17 @@ export NPM_TOKEN=4868f6f8-61a5-4c45-8f40-22ddab7e0304
 ANDROID_PLATFORM_TOOLS=~/Library/Android/sdk/platform-tools
 export PATH=$PATH:$ANDROID_PLATFORM_TOOLS
 
+# Android SDK Tools
+ANDROID_SDK_TOOLS=~/Library/Android/sdk/tools
+export PATH=$PATH:$ANDROID_SDK_TOOLS
+
 # Fastlane
 export PATH="$HOME/.fastlane/bin:$PATH"
 
 # Bash, ~/.bashrc
-eval "$(grunt --completion=bash)"
+#eval "$(grunt --completion=bash)"
 
-#
+# List processes occupying a given port
 function ports() { lsof -i :$@; }
 
 # Docker
@@ -79,3 +83,108 @@ dsh() { docker exec -it $(docker ps -aqf "name=$1") sh; }
 
 function dstop() { docker stop $(docker ps -aq); }
 function drm() { docker rm $(docker ps -a -q); }
+
+###-begin-npm-completion-###
+#
+# npm command completion script
+#
+# Installation: npm completion >> ~/.bashrc  (or ~/.zshrc)
+# Or, maybe: npm completion > /usr/local/etc/bash_completion.d/npm
+#
+
+if type complete &>/dev/null; then
+  _npm_completion () {
+    local words cword
+    if type _get_comp_words_by_ref &>/dev/null; then
+      _get_comp_words_by_ref -n = -n @ -n : -w words -i cword
+    else
+      cword="$COMP_CWORD"
+      words=("${COMP_WORDS[@]}")
+    fi
+
+    local si="$IFS"
+    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$cword" \
+                           COMP_LINE="$COMP_LINE" \
+                           COMP_POINT="$COMP_POINT" \
+                           npm completion -- "${words[@]}" \
+                           2>/dev/null)) || return $?
+    IFS="$si"
+    if type __ltrim_colon_completions &>/dev/null; then
+      __ltrim_colon_completions "${words[cword]}"
+    fi
+  }
+  complete -o default -F _npm_completion npm
+elif type compdef &>/dev/null; then
+  _npm_completion() {
+    local si=$IFS
+    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
+                 COMP_LINE=$BUFFER \
+                 COMP_POINT=0 \
+                 npm completion -- "${words[@]}" \
+                 2>/dev/null)
+    IFS=$si
+  }
+  compdef _npm_completion npm
+elif type compctl &>/dev/null; then
+  _npm_completion () {
+    local cword line point words si
+    read -Ac words
+    read -cn cword
+    let cword-=1
+    read -l line
+    read -ln point
+    si="$IFS"
+    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
+                       COMP_LINE="$line" \
+                       COMP_POINT="$point" \
+                       npm completion -- "${words[@]}" \
+                       2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  compctl -K _npm_completion npm
+fi
+###-end-npm-completion-###
+
+export PATH="/usr/local/opt/mongodb@3.2/bin:$PATH"
+
+# react native run
+alias rns="react-native run-android --appId com.localz.technician.local --main-activity SplashActivity"
+
+# release
+function zrelease() {
+  version=$1
+  git add .
+  package=$(pwd | cut -d'/' -f8)
+  tag="$package@$version"
+  echo "using tag: $tag"
+  git commit -m "$tag"
+  git tag -a $tag -m $tag
+}
+
+# release minor
+function rminor() {
+  version=$(npm version minor | cut -d'v' -f2)
+  echo "bumped to $version"
+  zrelease $version
+}
+
+function rpatch() {
+  version=$(npm version patch | cut -d'v' -f2)
+  echo "bumped to $version"
+  zrelease $version
+}
+
+function rmajor() {
+  version=$(npm version major | cut -d'v' -f2)
+  echo "bumped to $version"
+  zrelease $version
+}
+
+function fblog() {
+  adb shell setprop log.tag.FA VERBOSE
+  adb shell setprop log.tag.FA-SVC VERBOSE
+  adb logcat -v time -s FA FA-SVC
+}
+
+alias fbdebug="adb shell setprop debug.firebase.analytics.app com.localz.technician.local"
+alias fbundebug="adb shell setprop debug.firebase.analytics.app .none."
